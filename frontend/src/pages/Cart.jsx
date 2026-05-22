@@ -84,7 +84,7 @@ const Cart = () => {
           };
           
           
-          const res = await axios.post('http://localhost:8080/api/orders', orderPayload);
+          const res = await axios.post('/api/orders', orderPayload);
           
           setConfirmedOrder(res.data);
           setPaymentStatus('success'); 
@@ -100,7 +100,7 @@ const Cart = () => {
       /*
       cashfree.checkout({
         paymentSessionId: "session_id_from_backend",
-        returnUrl: "http://localhost:5173/profile"
+        returnUrl: `${window.location.origin}/profile`
       });
       */
       
@@ -251,7 +251,7 @@ const Cart = () => {
                            
                            try {
                              // Persist to user profile
-                             await axios.put(`http://localhost:8080/api/admin/users/${sessionUser.id}`, {
+                             await axios.put(`/api/admin/users/${sessionUser.id}`, {
                                name: sessionUser.name,
                                phone: contactPhone,
                                address: fullAddress

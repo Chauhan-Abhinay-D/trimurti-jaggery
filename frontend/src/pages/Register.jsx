@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Mail, Lock, User, Eye, EyeOff, Phone } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { API_URL } from '../config';
 import './Auth.css';
 
 const Register = () => {
@@ -39,7 +39,7 @@ const Register = () => {
     if (validate()) {
       setIsLoading(true);
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/register', { 
+        const response = await axios.post('/api/auth/register', { 
             name: formData.name, 
             email: formData.email, 
             phone: formData.phone,
@@ -61,7 +61,7 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
+    window.location.href = `${API_URL}/oauth2/authorization/google`;
   };
 
   return (

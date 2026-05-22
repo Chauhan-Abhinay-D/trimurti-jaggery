@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*") // Allows React frontend to hit backend without CORS errors
 public class ProductController {
 
     private final ProductRepository productRepository;

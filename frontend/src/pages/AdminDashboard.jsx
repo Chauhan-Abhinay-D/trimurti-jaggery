@@ -68,11 +68,11 @@ const AdminDashboard = () => {
     try {
       // Parallel fetching for better performance and isolation
       const [metRes, ordRes, usrRes, prdRes, inqRes] = await Promise.allSettled([
-        axios.get('http://localhost:8080/api/admin/metrics', config),
-        axios.get('http://localhost:8080/api/orders/admin', config),
-        axios.get('http://localhost:8080/api/admin/users', config),
-        axios.get('http://localhost:8080/api/products', config),
-        axios.get('http://localhost:8080/api/inquiries/admin', config)
+        axios.get('/api/admin/metrics', config),
+        axios.get('/api/orders/admin', config),
+        axios.get('/api/admin/users', config),
+        axios.get('/api/products', config),
+        axios.get('/api/inquiries/admin', config)
       ]);
 
       if (metRes.status === 'fulfilled') {
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
 
       if (sessionUser?.role === 'ROLE_SUPER_ADMIN') {
         try {
-          const staffRes = await axios.get('http://localhost:8080/api/admin/staff', config);
+          const staffRes = await axios.get('/api/admin/staff', config);
           setStaff(staffRes.data);
         } catch (e) {
           console.error("Staff fetch failed:", e);
@@ -152,7 +152,7 @@ const AdminDashboard = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.patch(`http://localhost:8080/api/orders/${orderId}/status`, { status: newStatus }, {
+      await axios.patch(`/api/orders/${orderId}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
@@ -164,7 +164,7 @@ const AdminDashboard = () => {
   const updateInquiryStatus = async (inquiryId, newStatus) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.patch(`http://localhost:8080/api/inquiries/${inquiryId}/status`, { status: newStatus }, {
+      await axios.patch(`/api/inquiries/${inquiryId}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setInquiries(inquiries.map(i => i.id === inquiryId ? { ...i, status: newStatus } : i));
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     if (window.confirm("Are you sure you want to permanently delete this order record? This cannot be undone.")) {
       try {
-        await axios.delete(`http://localhost:8080/api/orders/${id}`, {
+        await axios.delete(`/api/orders/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOrders(orders.filter(o => o.id !== id));
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await axios.get(`http://localhost:8080/api/orders/user/${user.id}`, {
+      const res = await axios.get(`/api/orders/user/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSelectedUserOrders({ user, orders: res.data || [] });
@@ -210,7 +210,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     if (window.confirm("Are you sure you want to permanently delete this product sequence?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/products/${id}`, {
+        await axios.delete(`/api/products/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProducts(products.filter(p => p.id !== id));
@@ -225,7 +225,7 @@ const AdminDashboard = () => {
     setIsSubmitting(true);
     const token = localStorage.getItem('token');
     try {
-      await axios.post('http://localhost:8080/api/admin/staff', staffForm, {
+      await axios.post('/api/admin/staff', staffForm, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Staff Member Onboarded Successfully!");
@@ -244,7 +244,7 @@ const AdminDashboard = () => {
     if (id === sessionUser.id) return alert("You cannot delete your own profile.");
     if (window.confirm("Are you sure you want to revoke administrative access for this employee?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/admin/users/${id}`, {
+        await axios.delete(`/api/admin/users/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStaff(staff.filter(s => s.id !== id));
@@ -259,7 +259,7 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     if (window.confirm("Are you sure you want to permanently delete this user profile?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/admin/users/${id}`, {
+        await axios.delete(`/api/admin/users/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUsers(users.filter(u => u.id !== id));
@@ -274,7 +274,7 @@ const AdminDashboard = () => {
     setIsCrmSaving(true);
     const token = localStorage.getItem('token');
     try {
-      await axios.put(`http://localhost:8080/api/admin/users/${isEditingUser.id}`, userEditForm, {
+      await axios.put(`/api/admin/users/${isEditingUser.id}`, userEditForm, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsEditingUser(null);
@@ -306,7 +306,7 @@ const AdminDashboard = () => {
     setIsResettingPassword(true);
     const token = localStorage.getItem('token');
     try {
-      await axios.put(`http://localhost:8080/api/admin/users/${selectedUserForReset.id}/reset-password`, 
+      await axios.put(`/api/admin/users/${selectedUserForReset.id}/reset-password`, 
         { newPassword }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -333,7 +333,7 @@ const AdminDashboard = () => {
       if (imageFile) {
         const formData = new FormData();
         formData.append("file", imageFile);
-        const uploadRes = await axios.post('http://localhost:8080/api/admin/upload', formData, {
+        const uploadRes = await axios.post('/api/admin/upload', formData, {
             headers: { 
               'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${token}`
@@ -345,9 +345,9 @@ const AdminDashboard = () => {
       const payload = { ...productForm, imageUrl: finalImageUrl };
 
       if (editingProductId) {
-        await axios.put(`http://localhost:8080/api/products/${editingProductId}`, payload, authConfig);
+        await axios.put(`/api/products/${editingProductId}`, payload, authConfig);
       } else {
-        await axios.post('http://localhost:8080/api/products', payload, authConfig);
+        await axios.post('/api/products', payload, authConfig);
       }
       
       fetchData();

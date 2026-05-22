@@ -105,7 +105,7 @@ const Profile = () => {
   useEffect(() => {
     if (activeTab === 'orders') {
       setLoadingOrders(true);
-      axios.get(`http://localhost:8080/api/orders/user/${sessionUser.id}`)
+      axios.get(`/api/orders/user/${sessionUser.id}`)
         .then(res => {
           setUserOrders(res.data);
           setLoadingOrders(false);
@@ -127,7 +127,7 @@ const Profile = () => {
     const fullAddress = `${addressParts.houseNo}, ${addressParts.building}, ${addressParts.street}, ${addressParts.area}, ${addressParts.city}, ${addressParts.pincode}, ${addressParts.state}`;
     
     try {
-      const response = await axios.put(`http://localhost:8080/api/admin/users/${sessionUser.id}`, {
+      const response = await axios.put(`/api/admin/users/${sessionUser.id}`, {
         name: profileData.name,
         phone: profileData.phone,
         address: fullAddress

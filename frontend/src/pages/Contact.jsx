@@ -23,7 +23,7 @@ const Contact = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:8080/api/inquiries', formData);
+      await axios.post('/api/inquiries', formData);
       setSuccess(true);
       setFormData({ name: '', email: '', phoneNumber: '', message: '' });
     } catch (err) {

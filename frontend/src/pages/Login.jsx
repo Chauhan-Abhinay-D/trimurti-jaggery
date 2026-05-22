@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { API_URL } from '../config';
 import './Auth.css';
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
     if (validate()) {
       setIsLoading(true);
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
+        const response = await axios.post('/api/auth/login', { email, password });
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify({ ...response.data, email }));
         
@@ -49,7 +49,7 @@ const Login = () => {
 
   const handleGoogleLogin = () => {
     // Redirect to the backend OAuth initialization endpoint
-    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
+    window.location.href = `${API_URL}/oauth2/authorization/google`;
   };
 
   return (

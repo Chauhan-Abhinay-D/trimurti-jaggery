@@ -20,7 +20,7 @@ const Products = () => {
   useEffect(() => {
     // Fetch products from backend
     const token = localStorage.getItem('token');
-    axios.get('http://localhost:8080/api/products', {
+    axios.get('/api/products', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(response => {

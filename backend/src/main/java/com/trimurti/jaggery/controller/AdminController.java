@@ -15,13 +15,11 @@ import java.time.LocalDate;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.web.multipart.MultipartFile;
-
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*") // Allows React frontend
 public class AdminController {
 
     @Autowired
@@ -91,16 +89,25 @@ public class AdminController {
     }
 
     @PostMapping("/upload")
-    public Map<String, String> uploadImage(@RequestParam("file") MultipartFile file) {
-        String uploadDir = "../frontend/public/assets/";
+    public Map<String, String> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        String uploadDir = "uploads/";
         try {
             Files.createDirectories(Paths.get(uploadDir));
             String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir + filename);
             Files.write(filePath, file.getBytes());
             
+            String scheme = request.getScheme();
+            String serverName = request.getServerName();
+            int serverPort = request.getServerPort();
+            
+            String baseUrl = scheme + "://" + serverName;
+            if ((scheme.equals("http") && serverPort != 80) || (scheme.equals("https") && serverPort != 443)) {
+                baseUrl += ":" + serverPort;
+            }
+            
             Map<String, String> response = new HashMap<>();
-            response.put("imageUrl", "/assets/" + filename);
+            response.put("imageUrl", baseUrl + "/uploads/" + filename);
             return response;
         } catch (Exception e) {
             throw new RuntimeException("Image upload failed: " + e.getMessage());
