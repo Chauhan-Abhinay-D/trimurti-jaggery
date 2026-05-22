@@ -3,6 +3,8 @@
   color: white;
   padding-top: 2.5rem;
   margin-top: auto;
+}
+
 .footer-content {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
