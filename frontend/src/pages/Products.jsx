@@ -6,9 +6,6 @@ import './Products.css';
 
 const Products = () => {
   const sessionUser = JSON.parse(localStorage.getItem('user') || "{}");
-  if (sessionUser.role === 'ROLE_ADMIN') {
-    return <Navigate to="/admin" replace />;
-  }
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -37,6 +34,10 @@ const Products = () => {
         setLoading(false);
       });
   }, []);
+
+  if (sessionUser.role === 'ROLE_ADMIN') {
+    return <Navigate to="/admin" replace />;
+  }
 
   // Compute segregated weight metrics dynamically with safety guards
   const safeProducts = Array.isArray(products) ? products : [];

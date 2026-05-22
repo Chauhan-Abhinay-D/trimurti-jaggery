@@ -1,19 +1,20 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Package, TrendingUp, Users, Settings, Grid, LogOut, Plus, Edit, Trash2, Image as ImageIcon, MessageSquare, ExternalLink, X, AlertCircle, IndianRupee, Clock, Lock, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [sessionUser, setSessionUser] = useState(() => JSON.parse(localStorage.getItem('user') || "null"));
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
     // Redirection Guard: If no valid session after checking, send to login
     if (!sessionUser || (sessionUser?.role !== 'ROLE_ADMIN' && sessionUser?.role !== 'ROLE_SUPER_ADMIN')) {
-      window.location.href = '/login';
+      navigate('/login');
     }
-  }, [sessionUser]);
+  }, [sessionUser, navigate]);
 
   // Removed early return from here to prevent Hook violation
   const [metrics, setMetrics] = useState({ totalOrders: 0, activeCoupons: 0, revenue: 0, userCount: 0 });
@@ -412,7 +413,7 @@ const AdminDashboard = () => {
               localStorage.removeItem('token');
               localStorage.removeItem('user');
               window.dispatchEvent(new Event('userUpdated'));
-              window.location.href = '/login';
+              navigate('/login');
             }}>
                <LogOut size={20} /> Sign Out
             </button>

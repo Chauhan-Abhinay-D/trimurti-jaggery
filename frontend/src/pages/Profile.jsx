@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { User, MapPin, Package, Settings, LogOut } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -16,23 +16,14 @@ const indianStates = [
 ].sort();
 
 const Profile = () => {
+  const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const sessionUser = JSON.parse(localStorage.getItem('user') || "{}");
 
   const [activeTab, setActiveTab] = useState('details');
   const [isEditing, setIsEditing] = useState(false);
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  
-  // If not authenticated, redirect to Login
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const sessionUser = JSON.parse(localStorage.getItem('user') || "{}");
-  
-  if (sessionUser.role === 'ROLE_ADMIN') {
-    return <Navigate to="/admin" replace />;
-  }
 
   const [profileData, setProfileData] = useState({
     name: sessionUser.name || 'John Doe',
@@ -103,7 +94,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'orders') {
+    if (activeTab === 'orders' && sessionUser.id) {
       setLoadingOrders(true);
       axios.get(`/api/orders/user/${sessionUser.id}`)
         .then(res => {
@@ -116,6 +107,15 @@ const Profile = () => {
         });
     }
   }, [activeTab, sessionUser.id]);
+
+  // If not authenticated, redirect to Login
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (sessionUser.role === 'ROLE_ADMIN') {
+    return <Navigate to="/admin" replace />;
+  }
 
   const handleSave = async () => {
     // Validate phone number: must be exactly 10 digits
@@ -265,7 +265,8 @@ const Profile = () => {
             <button className="nav-btn text-red" onClick={() => {
               localStorage.removeItem('token');
               localStorage.removeItem('user');
-              window.location.href = '/login';
+              window.dispatchEvent(new Event('userUpdated'));
+              navigate('/login');
             }}>
               <LogOut size={20} /> Sign Out
             </button>
@@ -409,7 +410,7 @@ const Profile = () => {
                 <div className="empty-state">
                   <Package size={48} color="#cbd5e1" />
                   <p>You haven't placed any orders yet.</p>
-                  <button className="btn btn-primary mt-4" onClick={() => window.location.href='/products'}>Browse Products</button>
+                  <button className="btn btn-primary mt-4" onClick={() => navigate('/products')}>Browse Products</button>
                 </div>
               )}
             </div>

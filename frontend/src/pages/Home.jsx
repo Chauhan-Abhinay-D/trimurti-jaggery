@@ -6,9 +6,6 @@ import './Home.css';
 
 const Home = () => {
   const sessionUser = JSON.parse(localStorage.getItem('user') || "{}");
-  if (sessionUser.role === 'ROLE_ADMIN') {
-    return <Navigate to="/admin" replace />;
-  }
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +28,10 @@ const Home = () => {
         setLoading(false);
       });
   }, []);
+
+  if (sessionUser.role === 'ROLE_ADMIN') {
+    return <Navigate to="/admin" replace />;
+  }
 
   return (
     <div className="home-page animate-fade-in">

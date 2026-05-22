@@ -7,9 +7,6 @@ import './Cart.css';
 
 const Cart = () => {
   const sessionUser = JSON.parse(localStorage.getItem('user') || "{}");
-  if (sessionUser.role === 'ROLE_ADMIN') {
-    return <Navigate to="/admin" replace />;
-  }
   const [items, setItems] = useState(JSON.parse(localStorage.getItem('cart') || "[]"));
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
@@ -22,6 +19,10 @@ const Cart = () => {
     houseNo: '', building: '', street: '', area: '', city: '', pincode: '', state: 'Maharashtra'
   });
   const [contactPhone, setContactPhone] = useState(sessionUser.phone || '');
+
+  if (sessionUser.role === 'ROLE_ADMIN') {
+    return <Navigate to="/admin" replace />;
+  }
 
   const indianStates = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", 
