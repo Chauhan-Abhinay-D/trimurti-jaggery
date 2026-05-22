@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Mail, Lock, User, Eye, EyeOff, Phone } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 import './Auth.css';
 
 const Register = () => {
@@ -60,7 +61,7 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
   };
 
   return (

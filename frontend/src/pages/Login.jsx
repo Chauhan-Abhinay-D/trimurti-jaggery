@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 import './Auth.css';
 
 const Login = () => {
@@ -47,8 +48,8 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Dummy OAuth redirect
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    // Redirect to the backend OAuth initialization endpoint
+    window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
   };
 
   return (
