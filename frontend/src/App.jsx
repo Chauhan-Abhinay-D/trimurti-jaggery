@@ -13,11 +13,26 @@ import Cart from './pages/Cart';
 import AdminDashboard from './pages/AdminDashboard'; // IMPORT
 import Policies from './pages/Policies';
 
-// Utility component to scroll to top on route change
+// Utility component to scroll to top and update document title on route change
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    const routeTitles = {
+      '/': 'Trimurti Jaggery',
+      '/about': 'About Us | Trimurti Jaggery',
+      '/products': 'Products | Trimurti Jaggery',
+      '/contact': 'Contact | Trimurti Jaggery',
+      '/login': 'Login | Trimurti Jaggery',
+      '/register': 'Register | Trimurti Jaggery',
+      '/profile': 'Profile | Trimurti Jaggery',
+      '/cart': 'Cart | Trimurti Jaggery',
+      '/admin': 'Admin Dashboard | Trimurti Jaggery',
+      '/policies': 'Policies | Trimurti Jaggery',
+    };
+
+    document.title = routeTitles[pathname] || 'Trimurti Jaggery';
   }, [pathname]);
   return null;
 };
