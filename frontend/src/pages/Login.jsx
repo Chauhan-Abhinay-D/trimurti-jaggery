@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
@@ -12,6 +12,39 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check for OAuth2 token and user info in URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      const name = params.get('name');
+      const emailParam = params.get('email');
+      const role = params.get('role');
+      const phone = params.get('phone');
+      const address = params.get('address');
+      const id = params.get('id');
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify({
+        name: decodeURIComponent(name || ''),
+        email: decodeURIComponent(emailParam || ''),
+        role: role || '',
+        phone: decodeURIComponent(phone || ''),
+        address: decodeURIComponent(address || ''),
+        id: id || ''
+      }));
+
+      // Notify other components (like Navbar) that the user session changed
+      window.dispatchEvent(new Event('userUpdated'));
+
+      if (role === 'ROLE_ADMIN' || role === 'ROLE_SUPER_ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/profile');
+      }
+    }
+  }, [navigate]);
 
   const validate = () => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
