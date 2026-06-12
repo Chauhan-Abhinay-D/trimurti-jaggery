@@ -38,10 +38,13 @@ public class AuthController {
         user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole("ROLE_USER");
+        
+        String sessionId = java.util.UUID.randomUUID().toString();
+        user.setActiveSessionId(sessionId);
 
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), sessionId);
         return ResponseEntity.ok(new AuthResponse(token, user.getName(), user.getRole(), user.getPhone(), user.getAddress(), user.getId()));
     }
 
@@ -52,7 +55,11 @@ public class AuthController {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+                String sessionId = java.util.UUID.randomUUID().toString();
+                user.setActiveSessionId(sessionId);
+                userRepository.save(user);
+                
+                String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), sessionId);
                 return ResponseEntity.ok(new AuthResponse(token, user.getName(), user.getRole(), user.getPhone(), user.getAddress(), user.getId()));
             }
         }

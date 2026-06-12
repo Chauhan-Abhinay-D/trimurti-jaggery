@@ -27,6 +27,9 @@ public class User {
     private String address;
     private String role; // e.g., "ROLE_USER", "ROLE_ADMIN"
 
+    @Column(name = "active_session_id")
+    private String activeSessionId;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -52,6 +55,9 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getActiveSessionId() { return activeSessionId; }
+    public void setActiveSessionId(String activeSessionId) { this.activeSessionId = activeSessionId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

@@ -44,15 +44,21 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
-        User user = userRepository.findByEmail(email).orElseGet(() -> {
+        String sessionId = java.util.UUID.randomUUID().toString();
+
+        User user = userRepository.findByEmail(email).map(existingUser -> {
+            existingUser.setActiveSessionId(sessionId);
+            return userRepository.save(existingUser);
+        }).orElseGet(() -> {
             User newUser = new User();
             newUser.setName(name != null ? name : "Google User");
             newUser.setEmail(email);
             newUser.setRole("ROLE_USER");
+            newUser.setActiveSessionId(sessionId);
             return userRepository.save(newUser);
         });
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), sessionId);
 
         String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl)
                 .queryParam("token", token)

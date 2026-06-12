@@ -28,8 +28,13 @@ public class JwtUtil {
     }
 
     public String generateToken(String email, String role) {
+        return generateToken(email, role, null);
+    }
+
+    public String generateToken(String email, String role, String sessionId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
+        claims.put("sessionId", sessionId);
         return createToken(claims, email);
     }
 
@@ -45,6 +50,10 @@ public class JwtUtil {
 
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
+    }
+
+    public String extractSessionId(String token) {
+        return (String) extractAllClaims(token).get("sessionId");
     }
 
     private Claims extractAllClaims(String token) {
