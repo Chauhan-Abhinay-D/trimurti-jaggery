@@ -130,7 +130,7 @@ const Cart = () => {
 
         <p className="mt-4" style={{color: '#334155'}}>Thank you for choosing Trimurti Jaggery. Your order has been registered in our system.</p>
         <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem'}}>
-          <Link to="/profile" className="btn btn-secondary">My Orders</Link>
+          <Link to="/profile" state={{ activeTab: 'orders' }} className="btn btn-secondary">My Orders</Link>
           <Link to="/products" className="btn btn-primary">Continue Shopping</Link>
         </div>
       </div>

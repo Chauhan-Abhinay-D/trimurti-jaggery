@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { User, MapPin, Package, Settings, LogOut } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -18,10 +18,11 @@ const indianStates = [
 
 const Profile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = localStorage.getItem('token');
   const sessionUser = JSON.parse(localStorage.getItem('user') || "{}");
 
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'details');
   const [isEditing, setIsEditing] = useState(false);
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
