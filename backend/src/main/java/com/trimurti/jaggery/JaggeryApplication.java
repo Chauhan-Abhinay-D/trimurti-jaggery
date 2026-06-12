@@ -8,8 +8,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.trimurti.jaggery.model.User;
 import com.trimurti.jaggery.repository.UserRepository;
 
+import jakarta.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @SpringBootApplication
 public class JaggeryApplication {
+
+	@PostConstruct
+	public void init() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(JaggeryApplication.class, args);
