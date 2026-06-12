@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { User, MapPin, Package, Settings, LogOut } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { createPortal } from 'react-dom';
 import './Profile.css';
 
 const indianStates = [
@@ -107,6 +108,17 @@ const Profile = () => {
         });
     }
   }, [activeTab, sessionUser.id]);
+
+  useEffect(() => {
+    if (isTrackingModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isTrackingModalOpen]);
 
   // If not authenticated, redirect to Login
   if (!token) {
@@ -419,7 +431,7 @@ const Profile = () => {
       </div>
 
       {/* TRACKING MODAL */}
-      {isTrackingModalOpen && selectedOrder && (
+      {isTrackingModalOpen && selectedOrder && createPortal(
         <div className="tracking-modal-overlay">
           <div className="tracking-modal-content glass animate-fade-in">
             <div className="modal-header">
@@ -473,7 +485,8 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
