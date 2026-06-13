@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Trash2, CreditCard, CheckCircle, LogIn } from 'lucide-react';
 import axios from 'axios';
-import { load } from '@cashfreepayments/cashfree-js';
 import './Cart.css';
 
 const Cart = () => {
@@ -65,48 +64,87 @@ const Cart = () => {
     setCheckoutStep('address');
   };
 
-  const initCashfreeCheckout = async () => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const initRazorpayCheckout = async () => {
     setPaymentStatus('processing');
     try {
-      // Initialize Cashfree
-      const cashfree = await load({ mode: "sandbox" });
-      
-      // Simulate backend session creation
-      console.log('Simulating fetching payment session from Backend...');
-      
-      // Since we don't have a live backend session ID, we'll simulate the popup wait time
-      setTimeout(async () => {
-        try {
-          // CALL BACKEND TO PERSIST ORDER
-          const orderPayload = {
-            userId: sessionUser.id,
-            totalAmount: total,
-            items: items.map(i => ({ id: i.id, qty: i.qty, price: i.price }))
-          };
-          
-          
-          const res = await axios.post('/api/orders', orderPayload);
-          
-          setConfirmedOrder(res.data);
-          setPaymentStatus('success'); 
-          saveCart([]); 
-        } catch (err) {
-          console.error("Order persistence failed:", err);
-          alert("Payment processed, but failed to save order to database.");
-          setPaymentStatus(null);
-        }
-      }, 2000);
+      const isScriptLoaded = await loadRazorpayScript();
+      if (!isScriptLoaded) {
+        alert("Failed to load Razorpay SDK. Please check your internet connection.");
+        setPaymentStatus(null);
+        return;
+      }
 
-      // In real scenario you would do:
-      /*
-      cashfree.checkout({
-        paymentSessionId: "session_id_from_backend",
-        returnUrl: `${window.location.origin}/profile`
+      // 1. Create order on backend
+      const resOrder = await axios.post('/api/orders/razorpay/create', {
+        amount: total
       });
-      */
-      
+
+      const { razorpayOrderId, amount, currency, keyId } = resOrder.data;
+
+      // 2. Open Razorpay Widget
+      const options = {
+        key: keyId,
+        amount: amount,
+        currency: currency,
+        name: "Trimurti Jaggery",
+        description: "Organic Chemical-Free Jaggery Products",
+        image: "/assets/jaggery_block.png",
+        order_id: razorpayOrderId,
+        handler: async function (response) {
+          try {
+            setPaymentStatus('processing');
+            const verifyPayload = {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              orderData: {
+                userId: sessionUser.id,
+                totalAmount: total,
+                items: items.map(i => ({ id: i.id, qty: i.qty, price: i.price }))
+              }
+            };
+
+            const resVerify = await axios.post('/api/orders/razorpay/verify', verifyPayload);
+            setConfirmedOrder(resVerify.data);
+            setPaymentStatus('success');
+            saveCart([]);
+          } catch (err) {
+            console.error("Order verification failed:", err);
+            alert("Payment signature verification failed. If payment was deducted, please contact support.");
+            setPaymentStatus(null);
+          }
+        },
+        prefill: {
+          name: sessionUser.name || "",
+          email: sessionUser.email || "",
+          contact: contactPhone || ""
+        },
+        theme: {
+          color: "#c9721d" // Accent matching brand color
+        },
+        modal: {
+          ondismiss: function () {
+            setPaymentStatus(null);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
     } catch (error) {
-      console.error(error);
+      console.error("Razorpay order creation failed:", error);
+      alert(error.response?.data || "Failed to start payment gateway.");
       setPaymentStatus(null);
     }
   };
@@ -264,7 +302,7 @@ const Cart = () => {
                              window.dispatchEvent(new Event('userUpdated'));
                              
                              // Proceed to payment
-                             initCashfreeCheckout();
+                             initRazorpayCheckout();
                            } catch (err) {
                              alert("Failed to save delivery details. Please try again.");
                            } finally {
