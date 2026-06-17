@@ -52,12 +52,12 @@ const Home = () => {
 
       <section className="products-section container">
         <div className="section-header">
-          <h2>Our Bestsellers</h2>
+          <h2>Our Products</h2>
           <p>Discover the purest form of sweetness directly from our factory.</p>
         </div>
 
         <div className="products-grid">
-          {Array.isArray(products) && products.slice(0, 3).map(product => (
+          {Array.isArray(products) && products.map(product => (
             <div key={product?.id || Math.random()} className="product-card glass hover:shadow-lg transition-transform">
               <div className="product-img-wrapper">
                 <img src={product.imageUrl || product.image} alt={product.name} className="product-img" />
